@@ -1,0 +1,91 @@
+version: "3.5"
+services:
+
+  tracker:
+    build: 
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/log:/var/log
+    networks:
+      - vm_net
+
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yaml:/etc/loki-config.yaml
+    command: -config.file=/etc/loki-config.yaml
+    networks:
+      - vm_net
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - ./promtail-config.yaml:/etc/promtail-config.yaml      
+      - /var/log:/var/log
+    command: -config.file=/etc/promtail-config.yaml
+    networks:
+      - vm_net
+  
+  prometheus:
+    image: prom/prometheus:v2.20.1
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - 9090:9090
+    expose:
+      - 9090
+    networks:
+      - vm_net
+
+  jaeger:
+    networks:
+      - vm_net
+    image: jaegertracing/all-in-one
+    ports:
+      - "14268:14268"
+      - "16686:16686"
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16687:16687"
+      - "14250:14250"
+      - "9411:9411"
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:9.2.7
+    depends_on:
+      - prometheus
+      - loki
+      - promtail
+    ports:
+      - 3000:3000
+    environment:
+      - GF_AUTH_DISABLE_LOGIN=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./provisioning/:/etc/grafana/provisioning/
+      - ./../../dashboards/victoriametrics.json:/var/lib/grafana/dashboards/vm.json
+      - ./../../dashboards/victorialogs.json:/var/lib/grafana/dashboards/vl.json
+      - ./../../dashboards/vmagent.json:/var/lib/grafana/dashboards/vmagent.json
+      - ./../../dashboards/vmalert.json:/var/lib/grafana/dashboards/vmalert.json
+    networks:
+      - vm_net
+    restart: always
+volumes:
+  prometheus_data: {}
+  grafanadata: {}
+networks:
+  vm_net:
+    driver: bridge
