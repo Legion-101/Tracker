@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  title: Обучающий трекер
+  description: Трекер для просмотра прогресса изучения образовательной программы
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080
+paths:
+  /tasks:
+    get:
+      summary: Метод получает все задания образовательной программы
+      tags: 
+        - tasks
+      responses:
+        '200':
+          description: Успешный ответ, возвращаемый список заданий
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tasks"
+        default:
+          description: Не стандарный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Метод создает задание с заданным id в образовательной программе
+      tags:
+       - tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+      responses:
+        '200':
+          description: Успешный ответ, возвращаемый список заданий
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        default:
+          description: Не стандарный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /task/{idTask}:
+    get:
+      summary: Метод получает задание по id образовательной программы
+      tags:
+        - tasks
+      parameters: 
+        - name: idTask
+          in: path
+          required: true
+          description: Идентификатор задания
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ, возвращаемый список заданий
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        default:
+          description: Не стандарный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Метод создает задание с заданным id в образовательной программе
+      tags:
+        - tasks
+      parameters: 
+        - name: idTask
+          in: path
+          required: true
+          description: Идентификатор задания
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное удаление задания
+          content:
+            application/json: {}
+        default:
+          description: Не стандарный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Task:
+      type: object
+      required:
+        - idTask
+        - nameTask
+        - status
+      properties:
+        idTask: 
+          type: integer
+          example: 001
+        nameTask: 
+          type: string
+          example: Введение
+        description:
+          type: string
+          example: Данное задание включает в себя знакомство с образовательной программой
+    Tasks:
+      type: array
+      items: 
+        $ref: "#/components/schemas/Task"
+    Error:
+      type: object
+      required:
+        - code
+        - name
+      properties:
+        code:
+          type: integer
+          example: 404
+        name:
+          type: string
+          example: Сервер не доступен
+      
