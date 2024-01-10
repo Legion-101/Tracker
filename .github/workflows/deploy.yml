@@ -33,7 +33,7 @@ jobs:
       - name: Add host in .know_hosts
         run: ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
       - name: Creater archive 
-        run: zip tracker.zip ./...
+        run: zip -r tracker.zip .
       - name: Copy archive
         run: scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 ./tracker.zip ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}:~/app
 
