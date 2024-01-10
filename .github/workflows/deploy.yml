@@ -36,11 +36,11 @@ jobs:
           # ssh remote host
           host: ${{secrets.SSH_HOST}}
           # ssh remote port
-          port: # optional, default is 22
+          port: 22
           # ssh remote user
           user: ${{secrets.SSH_USER}}
           # content of ssh private key. ex raw content of ~/.ssh/id_rsa
-          key: # optional
+          key: ${{secrets.SSH_PRIVATE_KEY}}
           # ssh remote password
           pass: # optional
           # connection timeout to remote host
