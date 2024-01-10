@@ -37,7 +37,7 @@ jobs:
       - name: Add host in .know_hosts
         run: ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
       - name: Add key.pun to remote server 
-        run: ssh-copy-id -i id_ed25519.pub ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}
+        run: ssh-copy-id -i ~/.ssh/id_ed25519.pub ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}
       - name: Creater archive 
         run: zip -r tracker.zip . 
       - name: Copy archive
