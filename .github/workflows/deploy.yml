@@ -42,4 +42,4 @@ jobs:
         run: |
           echo "Unzip archive"
           ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "cd
-~/app; unzip tracker.zip; docker-compose up -d --build;"
+          ~/app; unzip tracker.zip; docker-compose up -d --build;"
